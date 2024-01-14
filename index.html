@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App - Tutorial</title>
+    <link rel="stylesheet" href="Style.css" />
+  </head>
+
+  <body>
+    <div class="card">
+      <div class="search">
+        <input type="text" placeholder="enter city name" spellcheck="false" />
+        <button><img src="images/search.png" /></button>
+      </div>
+      <div class="Invalid">
+        <p>Invalid City Name</p>
+      </div>
+      <div class="weather">
+        <img src="images/rain.png" class="weather-icon" />
+        <h1 class="temp">22&deg;c</h1>
+        <h2 class="city">New York</h2>
+        <div class="details">
+          <div class="col">
+            <img src="images/humidity.png" alt="" />
+            <div>
+              <p class="humidity">50%</p>
+              <p>Humidity</p>
+            </div>
+          </div>
+          <div class="col">
+            <img src="images/wind.png" alt="" />
+            <div>
+              <p class="wind">15 K/hr</p>
+              <p>Wind Speed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const apiKey = "448199a8fc783cf8b9783d1c4896e0c8"; // we are storing the ApiKey
+      const apiUrl =
+        "https://api.openweathermap.org/data/2.5/weather?units=metric&q="; //We are storing the ApiUrl
+
+      const SearchBox = document.querySelector(".search input");
+      const SearchBtn = document.querySelector(".search button");
+      const WeatherIcon = document.querySelector(".weather-icon");
+
+      async function CheckWeather(city) {
+        const response = await fetch(apiUrl + city + `&appid=${apiKey}`); // using const here because the the value of repsonse will not change
+
+        // check for bad request, to display error message
+        if (response.status == 404) {
+          document.querySelector(".Invalid").style.display = "block";
+          document.querySelector(".weather").style.display = "none";
+        } // check for bad request, to display error message
+        else {
+          var data = await response.json(); // using var here because the the value of data is dynamic
+
+          console.log(data);
+
+          document.querySelector(".city").innerHTML = data.name; //we use this function to select an html element based on the class
+          document.querySelector(".temp").innerHTML =
+            Math.round(data.main.temp) + "°c"; //we use this function to select an html element based on the class and to get the temparture from a nested json
+          document.querySelector(".humidity").innerHTML =
+            data.main.humidity + "%";
+          document.querySelector(".wind").innerHTML =
+            data.wind.speed + " km/hr";
+
+          // Update the image based on the weather condition
+
+          if (data.weather[0].main == "Clouds") {
+            WeatherIcon.src = "images/clouds.png";
+          } else if (data.weather[0].main == "Clear") {
+            WeatherIcon.src = "images/clear.png";
+          } else if (data.weather[0].main == "Rain") {
+            WeatherIcon.src = "images/rain.png";
+          } else if (data.weather[0].main == "Drizzle") {
+            WeatherIcon.src = "images/drizzle.png";
+          } else if (data.weather[0].main == "Mist") {
+            WeatherIcon.src = "images/mist.png";
+          }
+          // Update the image based on the weather condition
+
+          //make the weather div visible
+          document.querySelector(".weather").style.display = "block";
+          document.querySelector(".Invalid").style.display = "none";
+          //make the weather div visible
+        }
+      }
+
+      SearchBtn.addEventListener("click", () => {
+        CheckWeather(SearchBox.value); //This function would be called anytime the search button is clicked
+      });
+    </script>
+  </body>
+</html>
